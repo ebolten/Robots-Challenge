@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+<script>
+    let bots = [];
+
+    document.addEventListener('DOMContentLoaded',function(){
+        // render students into react state
+        fetch('https://api.hatchways.io/assessment/students')
+        .then(resp => resp.json())
+        .then(data=>{
+            for (var i = 0; i < data['students'].length; i++) {
+                //this.setState({bots:[...this.state.bots, data['students'][i]]})
+                bots.push(data['students'][i]);
+                addBot(data['students'][i])
+            }
+        })
+        let searchBar = document.getElementById('search-bar');
+        //let buttonSub = document.getElementById('sub-btn');
+
+        // search bots
+        searchBar.onkeyup = () => {
+            removeBots();
+            for (var i = 0; i < bots.length; i++) {
+                if ((bots[i].firstName.toLowerCase().includes(searchBar.value.toLowerCase())) || (bots[i].firstName.toLowerCase() === searchBar.value.toLowerCase())) {
+                    addBot(bots[i]);
+                    continue;
+                }
+            }
+        }
+
+        // remove all bots
+        function removeBots() {
+            let robotDiv = document.getElementById('all-bots');
+            while (robotDiv.firstChild) {
+                robotDiv.removeChild(robotDiv.firstChild);
+            }
+        }
+
+        // get average
+        function getAverage(grades) {
+            
+            let average = 0;
+            for (var i = 0; i < grades.length; i++) {
+                average += parseInt(grades[i]);
+            }
+            return (average/grades.length).toFixed(2)
+        }
+
+
+
+        function addBot(bot) {
+            let robotDiv = document.getElementById('all-bots');
+
+            let row = document.createElement('div'); row.className = 'row';
+            let col = document.createElement('div'); col.className = 'column';
+
+            let col2 = document.createElement('div'); col2.className = 'column'; 
+            let botimg = document.createElement('img'); botimg.src = bot.pic;
+            botimg.style.border = '1px solid black'; botimg.style.borderRadius = '100px';
+
+
+            col2.appendChild(botimg);
+
+            let col3 = document.createElement('div'); col3.className = 'column'; 
+            let firstname = document.createElement('h1'); firstname.innerText = bot.firstName; 
+            let email = document.createElement('h5'); email.innerText = "Email: " + bot.email; 
+            let company = document.createElement('h5'); company.innerText = "Company: " + bot.company; 
+            let skill = document.createElement('h5'); skill.innerText = "Skill: " + bot.skill; 
+            let average = document.createElement('h5'); average.innerText = "Average: " + getAverage(bot.grades) + '%'; 
+            col3.appendChild(firstname);
+            col3.appendChild(email);
+            col3.appendChild(company);
+            col3.appendChild(skill);
+            col3.appendChild(average);
+
+            let col4 = document.createElement('div'); col4.className = 'column';
+            //let plus = document.createElement('h1'); plus.innerHTML = '&plus;'
+            //col4.appendChild(plus);
+
+            row.appendChild(col);
+            row.appendChild(col2);
+            row.appendChild(col3);
+            row.appendChild(col4);
+
+            robotDiv.appendChild(row);
+            robotDiv.appendChild(document.createElement('hr'));
+        }
+
+
+    })
+</script>
+<style>
+    .bot-container{
+        width:500px;
+        height:500px;
+        overflow-y:scroll;
+        background:yellow;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 4px;
+      }
+      .column {
+        flex: 25%;
+        max-width: 25%;
+        padding: 0 4px;
+      }
+      .column img {
+        margin-top: 8px;
+        vertical-align: middle;
+        width: 50%;
+      }
+      @media screen and (max-width: 800px) {
+        .column {
+        flex: 50%;
+        max-width: 50%;
+        }
+      }
+      @media screen and (max-width: 600px) {
+        .column {
+        flex: 100%;
+        max-width: 100%;
+        }
+      }
+</style>
+
+
+<body>
+
+    <div>
+        <input style="width:100%;height:50px;border:none;" placeholder="Search By Name" type="text" id="search-bar"/>
+        <hr/>
+        <!--<button id="sub-btn" type="submit">Submit</button>-->
+
+        <div style="box-shadow:2px black;margin:75px;border:1px solid black;height:500px;overflow-y:scroll;" id="bot-container">
+                <div id='all-bots'>
+                    
+
+
+                </div>
+            </div>
+        </div>
+
+
+</body>
